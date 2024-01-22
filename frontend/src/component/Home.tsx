@@ -11,10 +11,11 @@ import { FilterMatchMode } from 'primereact/api';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { useNavigate } from 'react-router-dom';
-import { getLevel } from '../utils';
+import { getLevel, locationNames, typeNetNames } from '../utils';
+import { Chip } from 'primereact/chip';
 
 function Home() {
-  const [schools, setSchools] = useState(null);
+  const [schools, setSchools] = useState([]);
   const [filters, setFilters] = useState({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
     NU_ANO_SAEB: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
@@ -38,11 +39,15 @@ function Home() {
     PC_NIVEL_8: { value: null, matchMode: FilterMatchMode.GREATER_THAN_OR_EQUAL_TO },
   });
   const [globalFilterValue, setGlobalFilterValue] = useState('');
-  const typeNetNames: any = { '1': 'Federal', '2': 'Estadual', '3': 'Municipal' };
   const [typeNet] = useState(Object.values(typeNetNames));
-  const locationNames: any = { '1': 'Urbana', '2': 'Rural' };
   const [locations] = useState(Object.values(locationNames));
   const [levels] = useState(['Nível I', 'Nível II', 'Nível III', 'Nível IV', 'Nível V', 'Nível VI', 'Nível VII', 'Nível VIII']);
+
+  const [amountSchools, setAmountSchools] = useState(0);
+  const [sumOfStudents, setSumOfStudents] = useState(0);
+  const [maxOfStudents, setMaxOfStudents] = useState(0);
+  const [minOfStudents, setMinOfStudents] = useState(0);
+  const [meanOfMean, setMeanOfMean] = useState('');
 
   const navigate = useNavigate();
 
@@ -50,10 +55,12 @@ function Home() {
     InseService.getSchoolsData().then((data) => {
       setSchools(getSchools(data));
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getSchools = (data: any): any => {
-    return [...(data || [])].map(d => {
+    const schools = [...(data || [])];
+    schools.map(d => {
       d['TP_TIPO_REDE'] = typeNetNames[d['TP_TIPO_REDE']];
       d['TP_LOCALIZACAO'] = locationNames[d['TP_LOCALIZACAO']];
       d['TP_CAPITAL'] = d['TP_CAPITAL'] === '1';
@@ -69,6 +76,8 @@ function Home() {
       d['PC_NIVEL_8'] = parseFloat(d['PC_NIVEL_8'].replace(',', '.'));
       return d;
     });
+    aggregate(schools);
+    return schools;
   }
 
   const getNetType = (status: string) => {
@@ -167,11 +176,31 @@ function Home() {
   };
   const header = renderHeader();
 
+  const aggregate = (orderedOrFilteredArray: any) => {
+    const countSchools = orderedOrFilteredArray.length;
+    let sumStudents = 0;
+    let maxStudents = 0;
+    let minStudents = 10000;
+    let sumMean = 0;
+    orderedOrFilteredArray.map((school: any) => {
+      sumStudents += school.QTD_ALUNOS_INSE;
+      if(school.QTD_ALUNOS_INSE > maxStudents) maxStudents = school.QTD_ALUNOS_INSE;
+      if(school.QTD_ALUNOS_INSE < minStudents) minStudents = school.QTD_ALUNOS_INSE;
+      sumMean += school.MEDIA_INSE;
+    });
+    setAmountSchools(countSchools);
+    setSumOfStudents(sumStudents);
+    setMaxOfStudents(maxStudents);
+    setMinOfStudents(minStudents);
+    setMeanOfMean((sumMean / countSchools).toFixed(2));
+  }
+
   return (
     <>
       <h1>Nível Socioeconômico (Inse)</h1>
       <DataTable value={schools} paginator rows={6} rowsPerPageOptions={[6, 10, 25, 50]} dataKey="ID_ESCOLA" filters={filters} filterDisplay="row"
-        removableSort sortMode="multiple" globalFilterFields={['NO_UF', 'NO_MUNICIPIO', 'NO_ESCOLA', 'MEDIA_INSE']} header={header} emptyMessage="Nenhuma escola encontrada.">
+        removableSort sortMode="multiple" globalFilterFields={['NO_UF', 'NO_MUNICIPIO', 'NO_ESCOLA', 'MEDIA_INSE']} header={header} emptyMessage="Nenhuma escola encontrada."
+        onValueChange={aggregate}>
         <Column field="NU_ANO_SAEB" header="Ano Saeb" sortable filter filterPlaceholder="Buscar ano" style={{ minWidth: '12rem' }} />
         <Column field="NO_UF" header="Estado" sortable filter filterPlaceholder="Buscar Estado" style={{ minWidth: '14rem' }} />
         <Column field="NO_MUNICIPIO" header="Município" sortable filter filterPlaceholder="Buscar Município" style={{ minWidth: '17rem' }} />
@@ -193,6 +222,14 @@ function Home() {
         <Column field="PC_NIVEL_8" header="Nivel 8" body={v => v.PC_NIVEL_8 + ' %'} sortable filter filterPlaceholder="Buscar percentual" style={{ minWidth: '11rem' }} />
         <Column body={actionBodyTemplate} />
       </DataTable>
+      <div className='mt-2'>
+        <strong className='mr-2'>Seleção Atual: </strong>
+        <Chip className='mr-2' label={`Total de escolas: ${amountSchools}`} />
+        <Chip className='mr-2' label={`Total de alunos: ${sumOfStudents}`} />
+        <Chip className='mr-2' label={`Escola com mais alunos: ${maxOfStudents}`} />
+        <Chip className='mr-2' label={`Escola com menos alunos: ${minOfStudents}`} />
+        <Chip className='mr-2' label={`Média dos alunos: ${meanOfMean}`} />
+      </div>
     </>
   )
 }

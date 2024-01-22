@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { InseService } from "../service/InseService";
 import { Button } from "primereact/button";
 import { Chart } from "primereact/chart";
 import './SchoolDetail.css';
-import { getLevel } from '../utils';
+import { getLevel, locationNames, typeNetNames } from '../utils';
 
 function SchoolDetail() {
     const [school, setSchool] = useState({});
@@ -13,9 +14,6 @@ function SchoolDetail() {
 
     const { schoolId } = useParams();
     const navigate = useNavigate();
-
-    const typeNetNames: any = { '1': 'Federal', '2': 'Estadual', '3': 'Municipal' };
-    const locationNames: any = { '1': 'Urbana', '2': 'Rural' };
 
     const getSchool = (data: any): any => {
         if (!data) return {};

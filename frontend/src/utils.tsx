@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export const getLevel = (status: string) => {
     switch (status) {
         case 'Nível I':
@@ -18,3 +19,7 @@ export const getLevel = (status: string) => {
             return '#22C55E';
     }
 };
+
+export const typeNetNames: any = { '1': 'Federal', '2': 'Estadual', '3': 'Municipal' };
+
+export const locationNames: any = { '1': 'Urbana', '2': 'Rural' };
