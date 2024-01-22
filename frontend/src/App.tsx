@@ -10,6 +10,7 @@ import { TriStateCheckbox } from 'primereact/tristatecheckbox';
 import { classNames } from 'primereact/utils';
 import { FilterMatchMode } from 'primereact/api';
 import { InputText } from 'primereact/inputtext';
+import { Button } from 'primereact/button';
 
 function App() {
   const [schools, setSchools] = useState(null);
@@ -158,6 +159,10 @@ function App() {
     return <Tag value={option} style={{ backgroundColor: getLevel(option) }} />;
   };
 
+  const actionBodyTemplate = (row: any) => {
+    return <Button severity='success' onClick={() => console.log(row.ID_ESCOLA)}>Detalhes</Button>;
+  }
+
   const onGlobalFilterChange = (e: any) => {
     const value = e.target.value;
     const _filters: any = { ...filters };
@@ -183,7 +188,7 @@ function App() {
   return (
     <>
       <h1>Nível Socioeconômico (Inse)</h1>
-      <DataTable value={schools} paginator rows={8} rowsPerPageOptions={[8, 10, 25, 50]} dataKey="ID_ESCOLA" filters={filters} filterDisplay="row"
+      <DataTable value={schools} paginator rows={6} rowsPerPageOptions={[6, 10, 25, 50]} dataKey="ID_ESCOLA" filters={filters} filterDisplay="row"
         removableSort sortMode="multiple" globalFilterFields={['NO_UF', 'NO_MUNICIPIO', 'NO_ESCOLA', 'MEDIA_INSE']} header={header} emptyMessage="Nenhuma escola encontrada.">
         <Column field="NU_ANO_SAEB" header="Ano Saeb" sortable filter filterPlaceholder="Buscar ano" style={{ minWidth: '12rem' }} />
         <Column field="NO_UF" header="Estado" sortable filter filterPlaceholder="Buscar Estado" style={{ minWidth: '14rem' }} />
@@ -196,14 +201,15 @@ function App() {
         <Column field="QTD_ALUNOS_INSE" header="Qt. Alunos" sortable filter filterPlaceholder="Buscar Quant. Alunos" style={{ minWidth: '12rem' }} />
         <Column field="MEDIA_INSE" header="Média" sortable filter filterPlaceholder="Buscar Médias" style={{ minWidth: '12rem' }} />
         <Column field="INSE_CLASSIFICACAO" header="Nível" body={levelBodyTemplate} sortable filter showFilterMenu={false} filterElement={levelRowFilterTemplate} bodyStyle={{ textAlign: 'center' }} />
-        <Column field="PC_NIVEL_1" header="Nivel 1" sortable filter filterPlaceholder="Buscar percentual" style={{ minWidth: '11rem' }} />
-        <Column field="PC_NIVEL_2" header="Nivel 2" sortable filter filterPlaceholder="Buscar percentual" style={{ minWidth: '11rem' }} />
-        <Column field="PC_NIVEL_3" header="Nivel 3" sortable filter filterPlaceholder="Buscar percentual" style={{ minWidth: '11rem' }} />
-        <Column field="PC_NIVEL_4" header="Nivel 4" sortable filter filterPlaceholder="Buscar percentual" style={{ minWidth: '11rem' }} />
-        <Column field="PC_NIVEL_5" header="Nivel 5" sortable filter filterPlaceholder="Buscar percentual" style={{ minWidth: '11rem' }} />
-        <Column field="PC_NIVEL_6" header="Nivel 6" sortable filter filterPlaceholder="Buscar percentual" style={{ minWidth: '11rem' }} />
-        <Column field="PC_NIVEL_7" header="Nivel 7" sortable filter filterPlaceholder="Buscar percentual" style={{ minWidth: '11rem' }} />
-        <Column field="PC_NIVEL_8" header="Nivel 8" sortable filter filterPlaceholder="Buscar percentual" style={{ minWidth: '11rem' }} />
+        <Column field="PC_NIVEL_1" header="Nivel 1" body={v => v.PC_NIVEL_1 + ' %'} sortable filter filterPlaceholder="Buscar percentual" style={{ minWidth: '11rem' }} />
+        <Column field="PC_NIVEL_2" header="Nivel 2" body={v => v.PC_NIVEL_2 + ' %'} sortable filter filterPlaceholder="Buscar percentual" style={{ minWidth: '11rem' }} />
+        <Column field="PC_NIVEL_3" header="Nivel 3" body={v => v.PC_NIVEL_3 + ' %'} sortable filter filterPlaceholder="Buscar percentual" style={{ minWidth: '11rem' }} />
+        <Column field="PC_NIVEL_4" header="Nivel 4" body={v => v.PC_NIVEL_4 + ' %'} sortable filter filterPlaceholder="Buscar percentual" style={{ minWidth: '11rem' }} />
+        <Column field="PC_NIVEL_5" header="Nivel 5" body={v => v.PC_NIVEL_5 + ' %'} sortable filter filterPlaceholder="Buscar percentual" style={{ minWidth: '11rem' }} />
+        <Column field="PC_NIVEL_6" header="Nivel 6" body={v => v.PC_NIVEL_6 + ' %'} sortable filter filterPlaceholder="Buscar percentual" style={{ minWidth: '11rem' }} />
+        <Column field="PC_NIVEL_7" header="Nivel 7" body={v => v.PC_NIVEL_7 + ' %'} sortable filter filterPlaceholder="Buscar percentual" style={{ minWidth: '11rem' }} />
+        <Column field="PC_NIVEL_8" header="Nivel 8" body={v => v.PC_NIVEL_8 + ' %'} sortable filter filterPlaceholder="Buscar percentual" style={{ minWidth: '11rem' }} />
+        <Column body={actionBodyTemplate} />
       </DataTable>
     </>
   )
