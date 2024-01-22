@@ -13,6 +13,7 @@ import { Button } from 'primereact/button';
 import { useNavigate } from 'react-router-dom';
 import { getLevel, locationNames, typeNetNames } from '../utils';
 import { Chip } from 'primereact/chip';
+import { Chart } from 'primereact/chart';
 
 function Home() {
   const [schools, setSchools] = useState([]);
@@ -48,6 +49,9 @@ function Home() {
   const [maxOfStudents, setMaxOfStudents] = useState(0);
   const [minOfStudents, setMinOfStudents] = useState(0);
   const [meanOfMean, setMeanOfMean] = useState('');
+  const [inseLevels, setInseLevels] = useState([0, 0, 0, 0, 0, 0, 0, 0]);
+  const [chartData, setChartData] = useState({});
+  const [chartOptions, setChartOptions] = useState({});
 
   const navigate = useNavigate();
 
@@ -182,18 +186,69 @@ function Home() {
     let maxStudents = 0;
     let minStudents = 10000;
     let sumMean = 0;
+    let level1 = 0;
+    let level2 = 0;
+    let level3 = 0;
+    let level4 = 0;
+    let level5 = 0;
+    let level6 = 0;
+    let level7 = 0;
+    let level8 = 0;
     orderedOrFilteredArray.map((school: any) => {
       sumStudents += school.QTD_ALUNOS_INSE;
-      if(school.QTD_ALUNOS_INSE > maxStudents) maxStudents = school.QTD_ALUNOS_INSE;
-      if(school.QTD_ALUNOS_INSE < minStudents) minStudents = school.QTD_ALUNOS_INSE;
+      if (school.QTD_ALUNOS_INSE > maxStudents) maxStudents = school.QTD_ALUNOS_INSE;
+      if (school.QTD_ALUNOS_INSE < minStudents) minStudents = school.QTD_ALUNOS_INSE;
       sumMean += school.MEDIA_INSE;
+      level1 += school.PC_NIVEL_1;
+      level2 += school.PC_NIVEL_2;
+      level3 += school.PC_NIVEL_3;
+      level4 += school.PC_NIVEL_4;
+      level5 += school.PC_NIVEL_5;
+      level6 += school.PC_NIVEL_6;
+      level7 += school.PC_NIVEL_7;
+      level8 += school.PC_NIVEL_8;
     });
     setAmountSchools(countSchools);
     setSumOfStudents(sumStudents);
     setMaxOfStudents(maxStudents);
     setMinOfStudents(minStudents);
     setMeanOfMean((sumMean / countSchools).toFixed(2));
+    setInseLevels([level1 / countSchools, level2 / countSchools, level3 / countSchools, level4 / countSchools,
+      level5 / countSchools, level6 / countSchools, level7 / countSchools, level8 / countSchools]);
   }
+
+  const plotChart = () => {
+    const data = {
+      labels: ['Alunos Nível I', 'Alunos Nível II', 'Alunos Nível III', 'Alunos Nível IV',
+        'Alunos Nível V', 'Alunos Nível VI', 'Alunos Nível VII', 'Alunos Nível VIII'],
+      datasets: [
+        {
+          label: 'Percentual de alunos',
+          data: inseLevels,
+          backgroundColor: [getLevel('Nível I'), getLevel('Nível II'), getLevel('Nível III'), getLevel('Nível IV'),
+          getLevel('Nível V'), getLevel('Nível VI'), getLevel('Nível VII'), getLevel('Nível VIII')],
+          borderColor: [getLevel('Nível I'), getLevel('Nível II'), getLevel('Nível III'), getLevel('Nível IV'),
+          getLevel('Nível V'), getLevel('Nível VI'), getLevel('Nível VII'), getLevel('Nível VIII')],
+          borderWidth: 1
+        }
+      ]
+    };
+    const options = {
+      aspectRatio: 4,
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    };
+
+    setChartData(data);
+    setChartOptions(options);
+  }
+
+  useEffect(() => {
+    plotChart();
+  }, [inseLevels]);
 
   return (
     <>
@@ -230,6 +285,8 @@ function Home() {
         <Chip className='mr-2' label={`Escola com menos alunos: ${minOfStudents}`} />
         <Chip className='mr-2' label={`Média dos alunos: ${meanOfMean}`} />
       </div>
+      <h2>Percentual de alunos da escola classificados por nível</h2>
+      <Chart type="bar" data={chartData} options={chartOptions} />
     </>
   )
 }
