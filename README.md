@@ -2,6 +2,8 @@
 
 Full Stack Developer Challenge where participants have to create dashboards with data from the Socioeconomic Level (Inse) of Brazil.
 
+Project was hosted on: [https://great-insight-lab-inse-challenge.vercel.app](https://great-insight-lab-inse-challenge.vercel.app)
+
 ## Converting XLSX to JSON
 
 ```bash
