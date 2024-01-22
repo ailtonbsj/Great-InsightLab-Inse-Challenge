@@ -31,6 +31,12 @@ npm i primereact
 npm i primeicons
 npm i primeflex
 
+# Install Router DOM
+npm i react-router-dom
+
+# Install ChartJS
+npm install chart.js
+
 # Run project
 npm run dev
 ```
