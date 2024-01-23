@@ -20,7 +20,7 @@ function SchoolDetail() {
         if (!data) return {};
         data['TP_TIPO_REDE'] = typeNetNames[data['TP_TIPO_REDE']];
         data['TP_LOCALIZACAO'] = locationNames[data['TP_LOCALIZACAO']];
-        data['TP_CAPITAL'] = data['TP_CAPITAL'] === '1';
+        data['TP_CAPITAL'] = data.TP_CAPITAL === '1' ? 'Capital' : 'Interior';
         data['QTD_ALUNOS_INSE'] = parseInt(data['QTD_ALUNOS_INSE']);
         data['MEDIA_INSE'] = parseFloat(data['MEDIA_INSE'].replace(',', '.'));
         data['PC_NIVEL_1'] = parseFloat(data['PC_NIVEL_1'].replace(',', '.'));
